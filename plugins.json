@@ -1,0 +1,29 @@
+[
+  {
+    "name": "web-scraper",
+    "description": "网页抓取与结构化提取（MCP + 技能）",
+    "version": "0.1.0",
+    "author": "dreamSailing",
+    "source": "https://github.com/dreamSailing/eos-plugin-web-scraper",
+    "permissions": ["network", "browser"],
+    "tags": ["web", "scraping", "browser"]
+  },
+  {
+    "name": "db-explorer",
+    "description": "数据库浏览与查询（PostgreSQL/MySQL/SQLite via MCP）",
+    "version": "0.2.0",
+    "author": "community",
+    "source": "https://github.com/example/eos-plugin-db",
+    "permissions": ["network"],
+    "tags": ["database", "sql", "postgres"]
+  },
+  {
+    "name": "doc-writer",
+    "description": "文档写作助手（技能包：大纲/润色/格式化）",
+    "version": "0.1.0",
+    "author": "community",
+    "source": "https://github.com/example/eos-plugin-docs",
+    "permissions": [],
+    "tags": ["writing", "docs", "skills"]
+  }
+]
