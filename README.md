@@ -1,3 +1,5 @@
+> 当前访问策略：市场目录公开，普通登录用户可安装；上传仅限服务端邮箱白名单。见 [ADR-002](docs/ADR-002-public-read-restricted-upload.md)。
+
 # EOS 统一插件平台
 
 EOS 系列产品共用的插件合同、兼容策略、包与安装运行库。内部市场位于 eos-base，产品注册位于 eos-base-pro，EOS Agent 已接入。当前改动已完成本地链路验收，尚未部署生产或替换日常客户端。

@@ -1319,29 +1319,6 @@
       ],
       "additionalProperties": false
     },
-    "MarketMember": {
-      "type": "object",
-      "properties": {
-        "userId": {
-          "type": "string"
-        },
-        "applicationIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "enabled": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "userId",
-        "applicationIds",
-        "enabled"
-      ],
-      "additionalProperties": false
-    },
     "MarketRecord": {
       "type": "object",
       "properties": {
@@ -1386,11 +1363,20 @@
         "mode": {
           "type": "string",
           "enum": [
-            "internal"
+            "public"
           ]
         },
         "trustConfigured": {
           "type": "boolean"
+        },
+        "canUpload": {
+          "type": "boolean"
+        },
+        "uploaders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -1399,7 +1385,9 @@
         "revision",
         "releases",
         "mode",
-        "trustConfigured"
+        "trustConfigured",
+        "canUpload",
+        "uploaders"
       ],
       "additionalProperties": false
     },

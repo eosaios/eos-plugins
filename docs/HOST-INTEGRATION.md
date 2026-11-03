@@ -14,7 +14,7 @@
 
 ## 一个新宿主要做什么
 
-1. 在产品组合层注册 applicationId；服务端内部成员授权明确包含该应用。应用 ID 来自经过认证的应用会话，不能只信请求体。
+1. 在产品组合层注册 applicationId；服务端明确注册该应用；正常账号都可获得读取和安装会话，上传资格另行校验。应用 ID 来自经过认证的应用会话，不能只信请求体。
 2. 构造 `HostDescriptor`：应用版本、平台 API、环境、稳定实例 ID、OS/架构/界面类型，以及实际实现的执行器、能力版本和 UI 插槽。
 3. 实现 `HostAdapter` 的 prepare、activate、commit、deactivate、dispose；数据升级通过 migrate 执行。activate 只暂存贡献，持久化完成后 commit 才开放权限。资源注册按安装 ID 和 generation 管理，失败必须可撤销。
 4. 从可信账户会话构造 MarketAccess，将宿主固定的公开根字节传给共享 MarketClient；阻塞网络客户端放在工作线程调用，异步服务器使用 spawn_blocking。产品适配器只负责自身应用/环境/来源/根的绑定。使用 `PluginStore` 的 prepare/install/enable/remove/recover；服务端解析结果仍要在本地重检。确认必须带同一 planDigest，下载结果须通过长度、摘要、清单及 TUF 校验。
