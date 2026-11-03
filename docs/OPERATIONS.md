@@ -17,11 +17,11 @@
 
 私有目录使用 0700。只允许服务身份和隔离签名设施访问私钥。离线根私钥不应出现在在线服务机器、源码、镜像或环境变量中。API 只向固定签名程序传递受审查的本地目录，工作进程清空继承环境、限制完成时间；请求不能指定程序、密钥或远程签名 URL。
 
-新增 SQL 为 base 的 `202611030001_plugin_market.sql` 与 pro 的 `202611030010_plugin_market_official_publisher.sql`，不重放历史种子。pro 注册官方 eos 命名空间，不自动授予任何用户内部成员资格。
+新增 SQL 为 base 的 `202611030001_plugin_market.sql`、`202611030002_plugin_market_runtime_privileges.sql` 与 pro 的 `202611030010_plugin_market_official_publisher.sql`，不重放历史种子。pro 注册官方 eos 命名空间，不自动授予任何用户内部成员资格。
 
 ## 客户端信任
 
-生产 Core 在编译时固定公开根元数据 `EOS_PLUGIN_MARKET_PRODUCTION_ROOT_JSON`；未配置时拒绝启用生产市场。测试使用独立的 `EOS_PLUGIN_MARKET_TEST_ROOT` 文件。禁止首次下载自动信任，测试凭据和根不能用于生产。
+生产 Core 编译时固定 `eos-core-app-server/trust/plugin-market-production-root.json`，不接受运行环境覆盖；该公开根由正式密钥仪式产生，根角色为 2/3 阈值，与测试根和三类在线角色密钥分离。根私钥以加密文件保存在离线运维设备，解密凭据使用设备钥匙串；在线服务器只保存 targets/snapshot/timestamp 密钥。测试使用独立的 `EOS_PLUGIN_MARKET_TEST_ROOT` 文件。禁止首次下载自动信任，测试凭据和根不能用于生产。
 
 Core 从 Go 壳接收当前账户身份和短期应用会话；不返回给前端或插件、不写日志。市场网络使用应用明确配置的出口；关闭代理时不读取环境代理。
 

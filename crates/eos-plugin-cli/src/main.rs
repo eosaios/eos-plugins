@@ -4,6 +4,13 @@ use std::path::Path;
 async fn run() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
     match args.get(1).map(String::as_str) {
+        Some("version") if args.len() == 2 => {
+            println!(
+                "{}",
+                option_env!("EOS_RELEASE_VERSION").unwrap_or(env!("CARGO_PKG_VERSION"))
+            );
+            Ok(())
+        }
         Some("inventory") if args.len() == 3 => {
             let report = inventory::inspect(Path::new(&args[2]))?;
             println!(
