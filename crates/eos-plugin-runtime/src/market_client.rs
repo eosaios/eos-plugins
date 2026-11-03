@@ -35,9 +35,14 @@ impl<'a> MarketClient<'a> {
                 "invalid authenticated market context",
             ));
         }
-        if access.subject_id.is_empty()
-            || (!access.local_only
-                && (access.account_token.is_empty() || access.market_token.is_empty()))
+        let anonymous = access.subject_id.is_empty()
+            && access.account_token.is_empty()
+            && access.market_token.is_empty()
+            && !access.local_only;
+        if !anonymous
+            && (access.subject_id.is_empty()
+                || (!access.local_only
+                    && (access.account_token.is_empty() || access.market_token.is_empty())))
             || access.environment_id.is_empty()
             || !access
                 .environment_id
@@ -83,23 +88,30 @@ impl<'a> MarketClient<'a> {
         path: &str,
         body: Option<Value>,
     ) -> Result<reqwest::blocking::Response> {
+        if self.access.subject_id.is_empty() && path != "/search" {
+            return Err(error(
+                "UNAUTHENTICATED",
+                "sign in to install or manage plugins",
+            ));
+        }
         if self.access.local_only {
             return Err(error(
                 "ONLINE_AUTH_REQUIRED",
                 "this operation requires a live market session",
             ));
         }
-        let mut req = self
-            .http
-            .request(
-                method,
-                format!(
-                    "{}/api/v1/plugin-market{path}",
-                    self.access.origin.trim_end_matches('/')
-                ),
-            )
-            .bearer_auth(&self.access.account_token)
-            .header("x-plugin-market-session", &self.access.market_token);
+        let mut req = self.http.request(
+            method,
+            format!(
+                "{}/api/v1/plugin-market{path}",
+                self.access.origin.trim_end_matches('/')
+            ),
+        );
+        if !self.access.subject_id.is_empty() {
+            req = req
+                .bearer_auth(&self.access.account_token)
+                .header("x-plugin-market-session", &self.access.market_token);
+        }
         if let Some(body) = body {
             req = req.json(&body);
         }
@@ -230,7 +242,7 @@ impl<'a> MarketClient<'a> {
         let mut policy: RuntimePolicy = serde_json::from_slice(&policy_bytes)
             .map_err(|_| error("SIGNATURE_INVALID", "invalid signed policy"))?;
         if policy.environment_id != self.access.environment_id
-            || policy.subject_id != "internal-members"
+            || policy.subject_id != "market-readers"
             || policy.issued_at > unix_time() + 300
             || policy.expires_at <= unix_time()
             || policy.expires_at > policy.issued_at + 24 * 3600

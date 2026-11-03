@@ -1,4 +1,4 @@
-// @generated; schema sha256=3e6c68f09d270f91851850208e54b0e85a007bcd767a6b1e2925f426438a4011
+// @generated; schema sha256=e2596509afa737cc5c46c1b9f4394ffbc5b0e243667d3eb0ba5a88aa17bf638a
 export interface PluginMeta {
   "id": string;
   "publisher": string;
@@ -282,11 +282,6 @@ export interface ErrorBody {
   "details": unknown;
   "retryable"?: boolean;
 }
-export interface MarketMember {
-  "userId": string;
-  "applicationIds": Array<string>;
-  "enabled": boolean;
-}
 export interface MarketRecord {
   "release": Release;
   "createdBy": string;
@@ -297,8 +292,10 @@ export interface AdminCatalog {
   "applications": Array<string>;
   "revision": number;
   "releases": Array<MarketRecord>;
-  "mode": "internal";
+  "mode": "public";
   "trustConfigured": boolean;
+  "canUpload": boolean;
+  "uploaders": Array<string>;
 }
 export interface ViewPayload {
   "installationId": string;
