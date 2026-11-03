@@ -8,6 +8,8 @@ EOS 系列产品共用的插件合同、兼容策略、包与安装运行库。�
 
 - [EOS 会议纪要](official/meeting-notes/README.md)：`eos.meeting-notes`，将用户提供的会议记录整理为摘要、已确认决策、行动项和待确认事项。源文件位于 `official/`；目录存在不表示已上架，市场审核和签名发布状态才是上架依据。
 
+已安装用户可参考[会议纪要调用指南](docs/USE-meeting-notes.md)，使用完整技能名称明确调用。市场包版本保持不可覆盖，指南的更新不修改已发布制品。
+
 - [架构](ARCHITECTURE.md) / [平台合同](docs/SPEC-plugin-platform-v1.md)
 - [宿主接入与执行器矩阵](docs/HOST-INTEGRATION.md)
 - [内部运行、密钥、迁移与交付](docs/OPERATIONS.md)
