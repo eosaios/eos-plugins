@@ -1,0 +1,9 @@
+package eos:plugin@1.0.0;
+interface host {
+  call: func(capability: string, operation: string, input: string) -> result<string, string>;
+}
+world component {
+  import host;
+  export describe: func() -> string;
+  export invoke: func(method: string, input: string) -> result<string, string>;
+}

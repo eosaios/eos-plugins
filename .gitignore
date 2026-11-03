@@ -1,0 +1,7 @@
+/target/
+/node_modules/
+*.eos-plugin
+*.pem
+*.key
+*.pk8
+__pycache__/

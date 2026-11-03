@@ -1,0 +1,31 @@
+[package]
+name = "eos-plugin-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+base64 = "0.22"
+eos-plugin-protocol.workspace = true
+eos-plugin-policy.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+flate2 = "1"
+tar = "0.4"
+unicode-normalization = "0.1"
+fs2 = "0.4"
+uuid = { version = "1", features = ["v4"] }
+tempfile = "3"
+semver.workspace = true
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "fs"] }
+tough = "=0.24.0"
+url = "2"
+futures-util = "0.3"
+async-trait = "0.1"
+jiff = "0.2"
+aws-lc-rs = "1"
+
+[dev-dependencies]
+toml.workspace = true
