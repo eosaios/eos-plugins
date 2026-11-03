@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = ["crates/eos-plugin-protocol", "crates/eos-plugin-policy", "crates/eos-plugin-runtime", "crates/eos-plugin-cli"]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+license = "LicenseRef-EOS-NCL-1.1"
+
+[workspace.dependencies]
+eos-plugin-protocol = { path = "crates/eos-plugin-protocol" }
+eos-plugin-policy = { path = "crates/eos-plugin-policy" }
+eos-plugin-runtime = { path = "crates/eos-plugin-runtime" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+semver = "1"
+toml = "0.8"
+thiserror = "2"

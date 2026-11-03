@@ -1,0 +1,7 @@
+{
+  "name": "@eos/plugin-sdk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/client.ts", "./protocol": "./src/protocol.ts" }
+}

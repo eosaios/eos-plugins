@@ -1,0 +1,1564 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.eosaios.com/plugins/v1/contracts.json",
+  "$ref": "#/$defs/Manifest",
+  "$defs": {
+    "PluginMeta": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*\\.[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 128
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 8192
+        },
+        "license": {
+          "type": "string"
+        },
+        "homepage": {
+          "type": "string"
+        },
+        "repository": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "i18n": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        }
+      },
+      "required": [
+        "id",
+        "publisher",
+        "name",
+        "version",
+        "description",
+        "license"
+      ],
+      "additionalProperties": false
+    },
+    "ApplicationRequirement": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "CapabilityRequirement": {
+      "type": "object",
+      "properties": {
+        "capability": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "capability",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "Compatibility": {
+      "type": "object",
+      "properties": {
+        "platformApi": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "portable",
+            "targeted"
+          ]
+        },
+        "applications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApplicationRequirement"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "platformApi",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    "Contribution": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "panel",
+            "page",
+            "command",
+            "settings",
+            "tool",
+            "event"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "ExecutionLimits": {
+      "type": "object",
+      "properties": {
+        "memoryBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fuel": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Module": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "skills/v1",
+            "mcp-stdio/v1",
+            "mcp-http/v1",
+            "wasm-component/v1",
+            "webview/v1"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "entry": {
+          "type": "string"
+        },
+        "activation": {
+          "type": "string",
+          "enum": [
+            "on-demand",
+            "on-command",
+            "on-event",
+            "on-startup"
+          ]
+        },
+        "requires": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CapabilityRequirement"
+          }
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "applications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApplicationRequirement"
+          },
+          "default": []
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string",
+          "enum": [
+            "trusted-process",
+            "sandboxed-process"
+          ]
+        },
+        "world": {
+          "type": "string"
+        },
+        "contributions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Contribution"
+          },
+          "default": []
+        },
+        "limits": {
+          "$ref": "#/$defs/ExecutionLimits"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "required",
+        "activation",
+        "requires",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
+    "Permission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "capability": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": {},
+          "default": {}
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "id",
+        "capability",
+        "actions",
+        "resources",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "CredentialRequirement": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "oauth",
+            "secret"
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "scopes",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "Configuration": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string"
+        },
+        "credentials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CredentialRequirement"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "Migration": {
+      "type": "object",
+      "properties": {
+        "fromVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "toVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "module": {
+          "type": "string"
+        },
+        "reversible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "fromVersion",
+        "toVersion",
+        "module",
+        "reversible"
+      ],
+      "additionalProperties": false
+    },
+    "DataContract": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "migrations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Migration"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "Dependency": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "module": {
+          "type": "string"
+        },
+        "exportApi": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pluginId",
+        "version",
+        "required"
+      ],
+      "additionalProperties": false
+    },
+    "ExportMethod": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "inputSchema": {
+          "type": "string"
+        },
+        "outputSchema": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "inputSchema",
+        "outputSchema",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
+    "PluginExport": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "module": {
+          "type": "string"
+        },
+        "interface": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExportMethod"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "module",
+        "interface",
+        "version",
+        "methods"
+      ],
+      "additionalProperties": false
+    },
+    "Manifest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "const": 1
+        },
+        "plugin": {
+          "$ref": "#/$defs/PluginMeta"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/Compatibility"
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Module"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Permission"
+          },
+          "default": []
+        },
+        "configuration": {
+          "$ref": "#/$defs/Configuration"
+        },
+        "data": {
+          "$ref": "#/$defs/DataContract"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Dependency"
+          },
+          "default": []
+        },
+        "exports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginExport"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "plugin",
+        "compatibility",
+        "modules"
+      ],
+      "additionalProperties": false
+    },
+    "Executor": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "abi": {
+          "type": "string"
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "type",
+        "abi"
+      ],
+      "additionalProperties": false
+    },
+    "Capability": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "inputSchemaDigest": {
+          "type": "string"
+        },
+        "outputSchemaDigest": {
+          "type": "string"
+        },
+        "limits": {
+          "$ref": "#/$defs/ExecutionLimits"
+        }
+      },
+      "required": [
+        "id",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "Platform": {
+      "type": "object",
+      "properties": {
+        "os": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string"
+        },
+        "surface": {
+          "type": "string",
+          "enum": [
+            "desktop",
+            "web",
+            "server",
+            "cli"
+          ]
+        }
+      },
+      "required": [
+        "os",
+        "arch",
+        "surface"
+      ],
+      "additionalProperties": false
+    },
+    "UiSlot": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "HostDescriptor": {
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string"
+        },
+        "hostVersion": {
+          "type": "string"
+        },
+        "platformApiVersion": {
+          "type": "string"
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "hostInstanceId": {
+          "type": "string"
+        },
+        "platform": {
+          "$ref": "#/$defs/Platform"
+        },
+        "executors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Executor"
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          }
+        },
+        "uiSlots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/UiSlot"
+          },
+          "default": []
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "applicationId",
+        "hostVersion",
+        "platformApiVersion",
+        "environmentId",
+        "hostInstanceId",
+        "platform",
+        "executors",
+        "capabilities",
+        "policyRevision"
+      ],
+      "additionalProperties": false
+    },
+    "CompatibilityIssue": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "module": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "expected": {
+          "type": "string"
+        },
+        "actual": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "field",
+        "expected",
+        "actual"
+      ],
+      "additionalProperties": false
+    },
+    "CompatibilityResult": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "compatible",
+            "incompatible",
+            "authorization-required"
+          ]
+        },
+        "selectedModules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailableModules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CompatibilityIssue"
+          }
+        }
+      },
+      "required": [
+        "status",
+        "selectedModules",
+        "unavailableModules",
+        "issues"
+      ],
+      "additionalProperties": false
+    },
+    "ArtifactTarget": {
+      "type": "object",
+      "properties": {
+        "os": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string"
+        },
+        "abis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "os",
+        "arch",
+        "abis"
+      ],
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "properties": {
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "manifestDigest": {
+          "type": "string"
+        },
+        "filesDigest": {
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/ArtifactTarget"
+        }
+      },
+      "required": [
+        "digest",
+        "length",
+        "manifestDigest",
+        "filesDigest",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "Release": {
+      "type": "object",
+      "properties": {
+        "manifest": {
+          "$ref": "#/$defs/Manifest"
+        },
+        "manifestDigest": {
+          "type": "string"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Artifact"
+          },
+          "minItems": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "validated",
+            "approved",
+            "published",
+            "withdrawn",
+            "revoked"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "publisherApproved": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "manifest",
+        "manifestDigest",
+        "artifacts",
+        "status",
+        "revision",
+        "publisherApproved"
+      ],
+      "additionalProperties": false
+    },
+    "InstallationScope": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "user",
+            "workspace",
+            "organization"
+          ]
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "InstallPlan": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "release": {
+          "$ref": "#/$defs/Release"
+        },
+        "artifact": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "hostDigest": {
+          "type": "string"
+        },
+        "subjectId": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/InstallationScope"
+        },
+        "selectedModules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "permissionRequests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Permission"
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Release"
+          },
+          "default": []
+        },
+        "createdAt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "planDigest": {
+          "type": "string"
+        },
+        "configurationSchemas": {
+          "type": "object",
+          "additionalProperties": {},
+          "default": {}
+        }
+      },
+      "required": [
+        "id",
+        "release",
+        "artifact",
+        "hostDigest",
+        "subjectId",
+        "scope",
+        "selectedModules",
+        "permissionRequests",
+        "createdAt",
+        "expiresAt",
+        "policyRevision",
+        "planDigest"
+      ],
+      "additionalProperties": false
+    },
+    "Installation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "pluginId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "artifactDigest": {
+          "type": "string"
+        },
+        "manifest": {
+          "$ref": "#/$defs/Manifest"
+        },
+        "applicationId": {
+          "type": "string"
+        },
+        "hostInstanceId": {
+          "type": "string"
+        },
+        "subjectId": {
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/InstallationScope"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "state": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "selectedModules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Permission"
+          }
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "leaseExpiresAt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lastError": {
+          "type": "string"
+        },
+        "dataVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "environmentId": {
+          "type": "string"
+        },
+        "configuration": {
+          "type": "object",
+          "additionalProperties": true,
+          "default": {}
+        }
+      },
+      "required": [
+        "id",
+        "pluginId",
+        "name",
+        "version",
+        "artifactDigest",
+        "manifest",
+        "applicationId",
+        "hostInstanceId",
+        "subjectId",
+        "scope",
+        "generation",
+        "state",
+        "enabled",
+        "selectedModules",
+        "grants",
+        "policyRevision",
+        "leaseExpiresAt",
+        "dataVersion",
+        "environmentId"
+      ],
+      "additionalProperties": false
+    },
+    "SearchRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "host": {
+          "$ref": "#/$defs/HostDescriptor"
+        },
+        "cursor": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "query",
+        "host"
+      ],
+      "additionalProperties": false
+    },
+    "MarketEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "release": {
+          "$ref": "#/$defs/Release"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/CompatibilityResult"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "version",
+        "publisher",
+        "release",
+        "compatibility"
+      ],
+      "additionalProperties": false
+    },
+    "SearchResult": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MarketEntry"
+          }
+        },
+        "nextCursor": {
+          "type": "string"
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "results",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "ResolveRequest": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "host": {
+          "$ref": "#/$defs/HostDescriptor"
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "scope": {
+          "$ref": "#/$defs/InstallationScope"
+        }
+      },
+      "required": [
+        "pluginId",
+        "host",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    "ResolveResult": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/$defs/Release"
+        },
+        "artifact": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Release"
+          },
+          "default": []
+        },
+        "policyRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "leaseExpiresAt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "trustRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "configurationSchemas": {
+          "type": "object",
+          "additionalProperties": {},
+          "default": {}
+        }
+      },
+      "required": [
+        "release",
+        "artifact",
+        "policyRevision",
+        "leaseExpiresAt",
+        "trustRevision"
+      ],
+      "additionalProperties": false
+    },
+    "OperationResult": {
+      "type": "object",
+      "properties": {
+        "installation": {
+          "$ref": "#/$defs/Installation"
+        },
+        "plan": {
+          "$ref": "#/$defs/InstallPlan"
+        },
+        "needsConsent": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "needsConsent"
+      ],
+      "additionalProperties": false
+    },
+    "RuntimePolicy": {
+      "type": "object",
+      "properties": {
+        "environmentId": {
+          "type": "string"
+        },
+        "subjectId": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "issuedAt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allowedDigests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "revokedDigests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "environmentId",
+        "subjectId",
+        "revision",
+        "issuedAt",
+        "expiresAt",
+        "allowedDigests",
+        "revokedDigests"
+      ],
+      "additionalProperties": false
+    },
+    "DownloadAuthorization": {
+      "type": "object",
+      "properties": {
+        "digest": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "digest",
+        "token",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "ErrorBody": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {},
+        "retryable": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "details"
+      ],
+      "additionalProperties": false
+    },
+    "MarketMember": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "applicationIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "userId",
+        "applicationIds",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "MarketRecord": {
+      "type": "object",
+      "properties": {
+        "release": {
+          "$ref": "#/$defs/Release"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "reviewedBy": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "release",
+        "createdBy"
+      ],
+      "additionalProperties": false
+    },
+    "AdminCatalog": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string"
+        },
+        "applications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "releases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MarketRecord"
+          }
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "internal"
+          ]
+        },
+        "trustConfigured": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "environment",
+        "applications",
+        "revision",
+        "releases",
+        "mode",
+        "trustConfigured"
+      ],
+      "additionalProperties": false
+    },
+    "ViewPayload": {
+      "type": "object",
+      "properties": {
+        "installationId": {
+          "type": "string"
+        },
+        "moduleId": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "html": {
+          "type": "string"
+        },
+        "nonce": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "installationId",
+        "moduleId",
+        "generation",
+        "html",
+        "nonce"
+      ],
+      "additionalProperties": false
+    },
+    "MarketAccess": {
+      "type": "object",
+      "x-sensitive": true,
+      "properties": {
+        "origin": {
+          "type": "string",
+          "x-go-name": "Origin"
+        },
+        "subjectId": {
+          "type": "string",
+          "x-go-name": "SubjectID"
+        },
+        "accountToken": {
+          "type": "string",
+          "x-go-name": "AccountToken"
+        },
+        "marketToken": {
+          "type": "string",
+          "x-go-name": "MarketToken"
+        },
+        "applicationId": {
+          "type": "string",
+          "x-go-name": "ApplicationID"
+        },
+        "environmentId": {
+          "type": "string",
+          "x-go-name": "EnvironmentID"
+        },
+        "hostVersion": {
+          "type": "string",
+          "x-go-name": "HostVersion"
+        },
+        "localOnly": {
+          "type": "boolean",
+          "x-go-name": "LocalOnly",
+          "default": false
+        },
+        "proxyUrl": {
+          "type": "string",
+          "x-go-name": "ProxyURL",
+          "default": ""
+        },
+        "uiIsolation": {
+          "type": "string",
+          "enum": [
+            "none",
+            "opaque-frame"
+          ],
+          "default": "none",
+          "x-go-name": "UIIsolation"
+        }
+      },
+      "required": [
+        "origin",
+        "subjectId",
+        "accountToken",
+        "marketToken",
+        "applicationId",
+        "environmentId",
+        "hostVersion"
+      ],
+      "additionalProperties": false
+    },
+    "MarketEnvelope": {
+      "type": "object",
+      "x-sensitive": true,
+      "properties": {
+        "access": {
+          "$ref": "#/$defs/MarketAccess"
+        },
+        "data": {
+          "default": null
+        }
+      },
+      "required": [
+        "access"
+      ],
+      "additionalProperties": false
+    },
+    "MarketSession": {
+      "type": "object",
+      "x-sensitive": true,
+      "x-rust-serialize": true,
+      "properties": {
+        "token": {
+          "type": "string",
+          "x-go-name": "Token"
+        },
+        "applicationId": {
+          "type": "string",
+          "x-go-name": "ApplicationID"
+        },
+        "environmentId": {
+          "type": "string",
+          "x-go-name": "EnvironmentID"
+        },
+        "subjectId": {
+          "type": "string",
+          "x-go-name": "SubjectID"
+        },
+        "expiresAt": {
+          "type": "integer",
+          "x-go-name": "ExpiresAt"
+        }
+      },
+      "required": [
+        "token",
+        "applicationId",
+        "environmentId",
+        "subjectId",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "AccountIdentitySignal": {
+      "type": "object",
+      "x-sensitive": true,
+      "properties": {
+        "subjectId": {
+          "type": "string",
+          "x-go-name": "SubjectID"
+        }
+      },
+      "required": [
+        "subjectId"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
