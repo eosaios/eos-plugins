@@ -1,0 +1,32 @@
+schemaVersion = 1
+
+[plugin]
+id = "eos.document-tools"
+publisher = "eos"
+name = "文档工具"
+version = "1.0.0"
+description = "文档处理技能及可选操作面板"
+license = "SEE LICENSE IN LICENSE"
+
+[compatibility]
+platformApi = "^1.0.0"
+scope = "portable"
+
+[[modules]]
+id = "writing-skills"
+type = "skills/v1"
+required = true
+entry = "skills"
+activation = "on-demand"
+requires = [{ capability = "eos.ai.skills", version = "^1.0.0" }]
+permissions = []
+
+[[modules]]
+id = "document-panel"
+type = "webview/v1"
+required = false
+entry = "ui/index.html"
+activation = "on-command"
+requires = [{ capability = "eos.ui.panel", version = "^1.0.0" }]
+permissions = []
+contributions = [{ kind = "panel", id = "documents", title = "文档工具" }]

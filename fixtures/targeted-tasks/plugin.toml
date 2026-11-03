@@ -1,0 +1,31 @@
+schemaVersion = 1
+
+[plugin]
+id = "eos.todo-importer"
+publisher = "eos"
+name = "任务导入器"
+version = "1.0.0"
+description = "将用户提供的任务数据写入所选择的任务清单"
+license = "SEE LICENSE IN LICENSE"
+
+[compatibility]
+platformApi = "^1.0.0"
+scope = "targeted"
+applications = [{ id = "eos-todo" }]
+
+[[modules]]
+id = "importer"
+type = "wasm-component/v1"
+required = true
+entry = "components/importer.wasm"
+world = "eos:plugin/component@1.0.0"
+activation = "on-command"
+requires = [{ capability = "eos.todo.tasks.write", version = "^1.0.0" }]
+permissions = ["write-selected-task-list"]
+
+[[permissions]]
+id = "write-selected-task-list"
+capability = "eos.todo.tasks.write"
+actions = ["create"]
+resources = { taskList = "user-selected" }
+reason = "将确认过的导入内容写入你选择的任务清单"

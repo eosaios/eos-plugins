@@ -1,0 +1,46 @@
+schemaVersion = 1
+[plugin]
+id = "fixture.integration"
+publisher = "fixture"
+name = "内部市场集成夹具"
+version = "1.0.0"
+description = "仅用于隔离测试的 Skills、WASM、MCP 和面板集成夹具"
+license = "MIT"
+[compatibility]
+platformApi = "^1.0.0"
+scope = "portable"
+[[modules]]
+id = "writing"
+type = "skills/v1"
+required = true
+entry = "skills"
+activation = "on-demand"
+requires = [{capability = "eos.ai.skills", version = "^1.0.0"}]
+permissions = []
+[[modules]]
+id = "compute"
+type = "wasm-component/v1"
+world = "eos:plugin/component@1.0.0"
+required = true
+entry = "components/ack.wat"
+activation = "on-demand"
+requires = []
+permissions = []
+[[modules]]
+id = "panel"
+type = "webview/v1"
+required = false
+entry = "ui/index.html"
+activation = "on-command"
+requires = [{capability = "eos.ui.panel", version = "^1.0.0"}]
+permissions = []
+contributions = [{kind="panel",id="fixture-panel",title="测试面板"}]
+[[modules]]
+id = "echo-mcp"
+type = "mcp-stdio/v1"
+profile = "trusted-process"
+required = false
+entry = "native/echo.py"
+activation = "on-demand"
+requires = []
+permissions = []
