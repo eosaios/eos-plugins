@@ -33,6 +33,7 @@
 | wasm-component/v1 | Component Model world `eos:plugin/component@1.0.0`，无 WASI，燃料/内存/时间/取消限制 |
 | webview/v1 | macOS 原生隔离验证通过后声明；独立 srcdoc iframe，sandbox 仅 allow-scripts，CSP 禁外联与表单，原生桥只接收主页面 |
 | eos.ai.skills 1.0.0 | invoke，仅当前插件命名空间；非空资源选择器使用精确 skills 列表 |
+| eos.ai.skills.tool-policy 1.0.0 | 显式技能调用遵守 allowed-tools；省略表示继承，空列表表示本轮无工具，非空列表只收窄权限。模型工具目录与执行入口均受限，续跑/恢复保留限制 |
 | eos.ui.panel 1.0.0 | panel/page/settings 插槽，实际页面通过隔离面板呈现 |
 
 Agent 不声明 sandboxed-process、远程服务端执行、OAuth/秘密代理或跨插件导出调用能力。要求这些能力的插件必须显示不兼容，不能自动降级为本机受信进程，也不能将秘密放入普通配置。新宿主可以按同一版本协商协议实现并声明对应能力。
