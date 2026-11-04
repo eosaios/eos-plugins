@@ -1,11 +1,11 @@
-# EOS 会议纪要 1.0.0
+# EOS 会议纪要 1.0.1
 
 EOS 官方会议整理技能。将用户提供的会议记录、逐字稿或讨论要点整理成摘要、已确认决策、行动清单和待确认事项。
 
 ## 安装与使用
 
 1. 在 [EOS 插件市场](https://plugins.eosaios.com/plugins/eos.meeting-notes) 搜索“会议纪要”或 `eos.meeting-notes`。
-2. 点击“在 EOS Agent 中安装”，使用支持网页安装的 EOS Agent Beta 1.0.19-beta.2 或更新版本；在应用中检查安装计划并确认。
+2. 点击“在 EOS Agent 中安装”，使用同时支持网页安装及 `eos.ai.skills.tool-policy` 的 EOS Agent；在应用中检查安装计划并确认。旧宿主缺少工具策略能力时会明确显示不兼容。
 3. 在“技能和应用”中确认官方会议纪要技能已启用。新建对话，选择会议纪要技能，或明确要求“使用 EOS 会议纪要整理以下记录”，再粘贴会议材料。
 4. 核对输出中的原文依据；负责人、日期或决策未明确时，会保留为待确认事项。
 
@@ -23,8 +23,9 @@ EOS 官方会议整理技能。将用户提供的会议记录、逐字稿或讨�
 
 ## 范围与权限
 
-- 标识：`eos.meeting-notes`，发布者：`eos`，版本：`1.0.0`。
-- 通用插件，要求宿主提供 `skills/v1` 执行器和 `eos.ai.skills ^1.0.0`；当前由 EOS Agent 使用，其他 EOS 产品可按统一宿主规范接入。
+- 标识：`eos.meeting-notes`，发布者：`eos`，版本：`1.0.1`。
+- 通用插件，要求宿主提供 `skills/v1` 执行器、`eos.ai.skills ^1.0.0` 和 `eos.ai.skills.tool-policy ^1.0.0`；当前由 EOS Agent 使用，其他 EOS 产品可按统一宿主规范接入。
+- 技能显式声明 `allowed-tools: []`，本轮调用不向模型提供工具，宿主执行入口也拒绝工具请求。该限制随本轮续跑保留；普通编程任务仍使用其自身权限。
 - 不捆绑可执行程序，不依赖外部服务或额外账号，不声明额外插件权限；需要宿主已有的 AI 模型。模型调用仍遵循宿主账号、计费和数据处理设置。
 - 不自动录音、识别音频、读取文件、发消息、创建任务或写入项目。使用者应自行提供可以交给当前模型处理的会议材料。
 - 这是 AI 整理技能。重要决策和执行事项应根据引用原文复核。
@@ -32,8 +33,8 @@ EOS 官方会议整理技能。将用户提供的会议记录、逐字稿或讨�
 ## 开发与发布
 
 ```sh
-cargo run -p eos-plugin-cli -- pack official/meeting-notes /tmp/eos.meeting-notes-1.0.0.eos-plugin
-cargo run -p eos-plugin-cli -- validate /tmp/eos.meeting-notes-1.0.0.eos-plugin
+cargo run -p eos-plugin-cli -- pack official/meeting-notes /tmp/eos.meeting-notes-1.0.1.eos-plugin
+cargo run -p eos-plugin-cli -- validate /tmp/eos.meeting-notes-1.0.1.eos-plugin
 ```
 
 通用制品目标为 `{"os":"any","arch":"any","abis":["skills/v1@1.0.0"]}`。通过统一市场上传、审核、签名发布，不修改历史版本或静态 `plugins.json`。发布前使用验收材料验证真实安装、技能加载和模型结果；不将打包成功当作实际使用成功。
