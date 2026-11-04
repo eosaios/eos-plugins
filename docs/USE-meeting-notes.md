@@ -1,10 +1,10 @@
 # 在 EOS Agent 使用官方会议纪要
 
-插件：`eos.meeting-notes`，版本 `1.0.0`。市场详情：[EOS 会议纪要](https://plugins.eosaios.com/plugins/eos.meeting-notes)。
+插件：`eos.meeting-notes`，版本 `1.0.1`。市场详情：[EOS 会议纪要](https://plugins.eosaios.com/plugins/eos.meeting-notes)。
 
 ## 安装
 
-在公开市场搜索“会议纪要”，进入详情，点击“在 EOS Agent 中安装”。选择 Beta 渠道，使用 EOS Agent 1.0.19-beta.2 或更新版本。应用会打开固定版本的安装计划，确认 `meeting-notes · skills/v1` 模块后安装；此版本不申请额外权限。
+在公开市场搜索“会议纪要”，进入详情，点击“在 EOS Agent 中安装”。选择 Beta 渠道，使用具备 `eos.ai.skills.tool-policy` 能力的 EOS Agent。应用会打开固定版本的安装计划，确认 `meeting-notes · skills/v1` 模块后安装；此版本不申请额外权限，旧宿主缺少该能力时不能安装新版插件。
 
 在“技能和应用 → 应用与扩展”中可看到已启用的 EOS 会议纪要；在技能页中，完整名称为 `eos.meeting-notes/meeting-notes/meeting-notes`。命名空间用于区分插件与模块，避免覆盖其他同名技能。
 
@@ -15,7 +15,7 @@
 ```text
 /eos.meeting-notes/meeting-notes/meeting-notes
 
-请仅根据下方会议材料整理纪要，不调用任何工具，不运行命令，不执行会议行动项。
+请根据下方会议材料整理纪要。
 
 （在这里粘贴会议记录）
 ```
@@ -29,7 +29,7 @@
 - 行动项及负责人、期限、状态、原文依据；未提供的信息保留为待确认。
 - 未解决问题。取消的安排不作为执行任务，相对日期有歧义时保留原文。
 
-这是 AI 整理技能，重要决策应根据引用原文复核。如果模型额外请求与文本整理无关的工具操作，可直接拒绝；无需为本技能扩大文件、网络或系统命令权限。
+这是 AI 整理技能，重要决策应根据引用原文复核。本版本的本轮工具白名单为空，宿主不提供工具，并在执行入口拒绝工具调用，不需要用户手动拒绝命令审批。
 
 ## 文件下载
 
