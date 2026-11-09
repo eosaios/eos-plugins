@@ -1,0 +1,7 @@
+{
+  "$eos.marketplace": {
+    "schemaVersion": 1,
+    "name": "EOS Meeting Notes",
+    "description": "Organize supplied meeting notes into a summary, confirmed decisions, action items, and open questions. Preserve owners, dates, and source evidence without inventing conclusions."
+  }
+}

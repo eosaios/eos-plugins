@@ -384,3 +384,11 @@ ACTIVATION_FAILED, MIGRATION_FAILED, OPERATION_OUTCOME_UNKNOWN
 正式运行只使用新合同。一次性迁移按预先盘点结果执行：静态索引样例不自动上架；旧 Agent name 安装生成受控 ID 映射并转换注册引用；后台 `plugin.json` 转为 `plugin.toml` 与隔离入口。未知来源/冲突必须报告并停用，不能自动映射为官方插件或删除数据。
 
 迁移工具不参与服务启动或日常请求。先备份、干跑、验证计划，再切换单一运行路径；旧已执行 SQL 保留，增加新迁移。旧源码和备份提供部署回滚，不把旧协议做成长驻 fallback。
+
+## Marketplace display localization
+
+Existing `plugin.i18n` language-to-resource paths and ordinary UI resources keep their semantics. A bounded JSON object may explicitly reserve the top-level `$eos.marketplace` namespace containing exactly `schemaVersion: 1`, `name`, and `description`. Ordinary UI keys alongside this namespace remain untouched. No manifest field is added; existing strict manifest readers continue to parse these packages. Current EOS hosts only validate declared i18n asset paths/existence and do not interpret their JSON contents.
+
+Only a valid JSON object with this namespace is projected. Non-JSON UI assets, JSON without it, and files above the 1 MiB discovery bound produce no display projection. An explicitly discovered namespace must satisfy strict validation: reject duplicate/unknown namespace fields, unsupported version, blank text or control characters. Limits: 32 projected locales, 16 KiB per display resource, 256 UTF-8 bytes for name and 8192 for description; language tags are canonical lower-case (en, zh, pt-br). All artifacts of a release must yield identical projections. Rendering escapes plain text; resources are never executable HTML.
+
+Public web APIs expose separate `display[manifestDigest][locale] = {name, description}` data derived at upload from validated package bytes, stored separately and returned only for reviewed published releases. Never modify the signed manifest, release identity, installation plan, permission reasons or artifact digests. Missing translations use original manifest text. Old ordinary UI resources are not reinterpreted. Historical signed packages are never rewritten. A new official plugin version still requires normal review and signing before publication.
