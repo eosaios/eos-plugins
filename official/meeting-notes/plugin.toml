@@ -4,11 +4,15 @@ schemaVersion = 1
 id = "eos.meeting-notes"
 publisher = "eos"
 name = "EOS 会议纪要"
-version = "1.0.1"
+version = "1.0.2"
 description = "把会议记录整理为摘要、已确认决策、行动项和待确认事项，保留负责人、日期与原文依据，不编造结论。Meeting notes and action items."
 license = "EOS-NCL-1.1"
 homepage = "https://plugins.eosaios.com/plugins/eos.meeting-notes"
 repository = "https://github.com/eosaios/eos-plugins"
+
+[plugin.i18n]
+en = "i18n/en.json"
+zh = "i18n/zh.json"
 
 [compatibility]
 platformApi = "^1.0.0"

@@ -1,0 +1,7 @@
+{
+  "$eos.marketplace": {
+    "schemaVersion": 1,
+    "name": "EOS 会议纪要",
+    "description": "把会议记录整理为摘要、已确认决策、行动项和待确认事项，保留负责人、日期与原文依据，不编造结论。"
+  }
+}
