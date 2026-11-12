@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "plugins",
+  "title": "插件开发手册",
+  "label": "PLUGIN DEVELOPMENT",
+  "description": "从第一个插件开始，掌握模块开发、调试、权限和发布流程。",
+  "language": "zh",
+  "updated": "2026-11-12",
+  "home": "start",
+  "pages": [
+    { "id": "start", "title": "开始使用", "source": "docs/developer/README.md" },
+    { "id": "quickstart", "title": "开发第一个插件", "source": "docs/developer/QUICKSTART.md" },
+    { "id": "manifest", "title": "清单与兼容性", "source": "docs/developer/MANIFEST.md" },
+    { "id": "modules", "title": "模块开发", "source": "docs/developer/MODULES.md" },
+    { "id": "debugging", "title": "调试与排障", "source": "docs/developer/DEBUGGING.md" },
+    { "id": "publishing", "title": "上传与发布", "source": "docs/developer/PUBLISHING.md" }
+  ],
+  "downloads": [
+    {
+      "id": "examples",
+      "title": "四个完整开发示例（ZIP）",
+      "files": [
+        "LICENSE", "sdk/typescript/src/client.ts",
+        "examples/hello-skills/LICENSE", "examples/hello-skills/README.md", "examples/hello-skills/plugin.toml", "examples/hello-skills/skills/summarize/SKILL.md",
+        "examples/hosts/skills.json",
+        "examples/notes-panel/README.md", "examples/notes-panel/package.json", "examples/notes-panel/package-lock.json", "examples/notes-panel/build.mjs", "examples/notes-panel/dev-host.html", "examples/notes-panel/smoke.mjs", "examples/notes-panel/src/main.ts", "examples/notes-panel/package/plugin.toml", "examples/notes-panel/package/README.md", "examples/notes-panel/package/LICENSE", "examples/notes-panel/package/schemas/config.json",
+        "examples/mcp-echo/README.md", "examples/mcp-echo/Cargo.toml", "examples/mcp-echo/Cargo.lock", "examples/mcp-echo/src/main.rs", "examples/mcp-echo/stage.py", "examples/mcp-echo/smoke.py", "examples/mcp-echo/package/plugin.toml", "examples/mcp-echo/package/README.md", "examples/mcp-echo/package/LICENSE",
+        "examples/wasm-ack/plugin.toml", "examples/wasm-ack/README.md", "examples/wasm-ack/LICENSE", "examples/wasm-ack/components/ack.wat"
+      ]
+    }
+  ]
+}
