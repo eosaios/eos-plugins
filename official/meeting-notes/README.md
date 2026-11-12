@@ -1,4 +1,4 @@
-# EOS 会议纪要 1.0.1
+# EOS 会议纪要 1.0.2
 
 EOS 官方会议整理技能。将用户提供的会议记录、逐字稿或讨论要点整理成摘要、已确认决策、行动清单和待确认事项。
 
@@ -23,7 +23,7 @@ EOS 官方会议整理技能。将用户提供的会议记录、逐字稿或讨�
 
 ## 范围与权限
 
-- 标识：`eos.meeting-notes`，发布者：`eos`，版本：`1.0.1`。
+- 标识：`eos.meeting-notes`，发布者：`eos`，版本：`1.0.2`。
 - 通用插件，要求宿主提供 `skills/v1` 执行器、`eos.ai.skills ^1.0.0` 和 `eos.ai.skills.tool-policy ^1.0.0`；当前由 EOS Agent 使用，其他 EOS 产品可按统一宿主规范接入。
 - 技能显式声明 `allowed-tools: []`，本轮调用不向模型提供工具，宿主执行入口也拒绝工具请求。该限制随本轮续跑保留；普通编程任务仍使用其自身权限。
 - 不捆绑可执行程序，不依赖外部服务或额外账号，不声明额外插件权限；需要宿主已有的 AI 模型。模型调用仍遵循宿主账号、计费和数据处理设置。
@@ -33,10 +33,12 @@ EOS 官方会议整理技能。将用户提供的会议记录、逐字稿或讨�
 ## 开发与发布
 
 ```sh
-cargo run -p eos-plugin-cli -- pack official/meeting-notes /tmp/eos.meeting-notes-1.0.1.eos-plugin
-cargo run -p eos-plugin-cli -- validate /tmp/eos.meeting-notes-1.0.1.eos-plugin
+cargo run -p eos-plugin-cli -- pack official/meeting-notes /tmp/eos.meeting-notes-1.0.2.eos-plugin
+cargo run -p eos-plugin-cli -- validate /tmp/eos.meeting-notes-1.0.2.eos-plugin
 ```
 
 通用制品目标为 `{"os":"any","arch":"any","abis":["skills/v1@1.0.0"]}`。通过统一市场上传、审核、签名发布，不修改历史版本或静态 `plugins.json`。发布前使用验收材料验证真实安装、技能加载和模型结果；不将打包成功当作实际使用成功。
 
 许可：与本仓库一致的 EOS 非商用许可证 v1.1，见包内 `LICENSE`。商业使用按许可证要求取得书面授权。
+
+1.0.2 源码包含 `i18n/en.json` 与 `i18n/zh.json`，仅供市场展示名称与简介。源码提交不代表市场上架；须完成完整服务验收、审核和新版本签名发布后才会上线；不替换历史版本。
