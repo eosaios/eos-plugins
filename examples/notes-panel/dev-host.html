@@ -1,0 +1,39 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>便签本地模拟宿主</title>
+<style>body{font:16px system-ui;margin:24px}iframe{width:100%;height:440px}button{font:inherit;margin:12px 0;padding:8px}pre{white-space:pre-wrap}</style>
+<h1>本地模拟宿主</h1>
+<p>仅演示 SDK 消息与 UI。数据只在本页面内存保留，刷新重置；不提供真实 EOS 账号、授权、签名或原生桥隔离验证。</p>
+<button id="reload">关闭并重新打开插件页面</button><pre id="state">尚未连接</pre>
+<iframe id="plugin" title="本地便签插件" sandbox="allow-scripts" referrerpolicy="no-referrer"
+  allow="camera 'none'; microphone 'none'; geolocation 'none'; clipboard-read 'none'; clipboard-write 'none'"></iframe>
+<script>
+const frame = document.querySelector('#plugin'), state = document.querySelector('#state');
+const data = new Map(); let port, nonce;
+const policy = "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'";
+async function openPlugin() {
+  port?.close(); nonce = crypto.randomUUID();
+  const response = await fetch('package/ui/index.html', {cache:'no-store'});
+  if (!response.ok) throw new Error('请先 npm ci && npm run build');
+  const html = await response.text();
+  frame.onload = () => {
+    const channel = new MessageChannel(); port = channel.port1;
+    port.onmessage = ({data: request}) => {
+      const {id, method, params = {}} = request;
+      try {
+        let result = null;
+        if (method === 'configuration.get') result = {title:'本地模拟便签'};
+        else if (method === 'storage.get') result = data.get(params.key) ?? null;
+        else if (method === 'storage.set') data.set(params.key, params.value);
+        else if (method === 'storage.delete') data.delete(params.key);
+        else if (method === 'log') result = {accepted:true};
+        else throw new Error('MOCK_METHOD_UNSUPPORTED');
+        state.textContent = JSON.stringify(Object.fromEntries(data), null, 2);
+        port.postMessage({id, result});
+      } catch (error) { port.postMessage({id, error:String(error)}); }
+    };
+    frame.contentWindow.postMessage({type:'eos-plugin:init', nonce}, '*', [channel.port2]);
+  };
+  frame.srcdoc = '<!doctype html><meta http-equiv="Content-Security-Policy" content="'+policy+'"><script>window.__EOS_PLUGIN_NONCE__='+JSON.stringify(nonce)+';<\/script>'+html;
+}
+document.querySelector('#reload').onclick = () => openPlugin().catch(error => {state.textContent=String(error)});
+openPlugin().catch(error => {state.textContent=String(error)});
+</script></html>

@@ -1,0 +1,20 @@
+schemaVersion = 1
+[plugin]
+id = "tutorial.wasm-ack"
+publisher = "tutorial"
+name = "WASM 确认示例"
+version = "0.1.0"
+description = "最小无 WASI Component Model 工具"
+license = "MIT"
+[compatibility]
+platformApi = "^1.0.0"
+scope = "portable"
+[[modules]]
+id = "compute"
+type = "wasm-component/v1"
+required = true
+entry = "components/ack.wat"
+world = "eos:plugin/component@1.0.0"
+activation = "on-demand"
+requires = []
+permissions = []
