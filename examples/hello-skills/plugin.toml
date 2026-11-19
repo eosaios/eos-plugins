@@ -1,0 +1,19 @@
+schemaVersion = 1
+[plugin]
+id = "tutorial.hello-skills"
+publisher = "tutorial"
+name = "三点摘要"
+version = "0.1.0"
+description = "把用户提供的文字整理为三条要点"
+license = "MIT"
+[compatibility]
+platformApi = "^1.0.0"
+scope = "portable"
+[[modules]]
+id = "writing"
+type = "skills/v1"
+required = true
+entry = "skills"
+activation = "on-demand"
+requires = [{ capability = "eos.ai.skills", version = "^1.0.0" }, { capability = "eos.ai.skills.tool-policy", version = "^1.0.0" }]
+permissions = []

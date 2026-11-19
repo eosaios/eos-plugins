@@ -2,6 +2,8 @@
 
 日期：2026-11-03。状态：架构已采纳；访问策略以 ADR-002 的公开读取、受控上传为准。
 
+2026-11-12 校订：本文保留架构方向与改造前基线；当前作者操作见[开发手册](docs/developer/README.md)，源码实现/扩展目标差异见[核实记录](docs/developer/CODE-VERIFICATION.md)。不从本页推断当前服务器部署或客户端发版状态。
+
 已确认的产品方向：自建服务器承载市场，目录公开读取，当前上传仅限指定账号；统一 EOS 系列插件系统，以 EOS Agent 为第一个宿主，未来产品按同一契约接入。实际支持矩阵见 [宿主接入](docs/HOST-INTEGRATION.md)，测试与尚未执行的发布事项见 [实施与验收](docs/IMPLEMENTATION-plugin-platform-v1.md)。未宣告的执行器和业务能力仍必须拒绝。
 
 规范入口：[v1 契约](docs/SPEC-plugin-platform-v1.md)、[架构决策](docs/ADR-001-unified-plugin-platform.md)、[实施与验收](docs/IMPLEMENTATION-plugin-platform-v1.md)。
@@ -21,7 +23,7 @@
 
 ## 2. 改造前代码基线
 
-本节是本地源码观察，不是线上数据盘点。用户说明当前尚无正式插件；实施切换时仍需只读盘点实际数据库和本地安装，不能因样例或模板存在就删除数据。
+本节是 2026-11-03 改造前本地源码观察，不是当前功能/插件数量或线上数据盘点。后续已有官方插件目录、市场入口和统一管理路径；迁移仍需只读盘点实际数据库和本地安装，不能因样例或模板存在就删除数据。
 
 - `eos-plugins/plugins.json`：静态索引，包含三个样例条目，其中有示例仓库地址，不能视为三个可用插件。
 - `eos-core-rs/.../services/plugin_index.rs`：默认读取 `https://dl.eosaios.com/plugins.json`，按名称、描述和标签搜索。
@@ -67,7 +69,7 @@ flowchart TB
 ## 4. 规范、代码与产品规则的归属
 
 - **`eos-plugins`**：演进为规范与开发入口，保存清单 Schema、API/能力定义、协议夹具、生成规则、SDK 发布说明和开发模板。规范版本与插件版本独立。
-- **产品中性的共享插件组件**：建议独立 `eos-plugin-protocol`、`eos-plugin-policy`、`eos-plugin-runtime`；先放在 `eos-plugins` 的共享实现工作区，产物供 base 与 Core 单向依赖，不能依赖 Agent、base 或 pro 业务。目录为实施建议，当前未创建这些 crate。
+- **产品中性的共享插件组件**：已在 `eos-plugins/crates` 实现 `eos-plugin-protocol`、`eos-plugin-policy`、`eos-plugin-runtime` 与 `eos-plugin-cli`，供 base 与 Core 单向消费；不依赖 Agent、base 或 pro 业务。消费快照与 DTO 由 scripts/sync-consumers.py 管理。
 - **`eos-base`**：通用市场领域模型、存储、API、鉴权、签名发布流程和通用后台。使用应用注册数据，不硬编码 EOS 产品键。
 - **`eos-base-pro`**：EOS 应用注册、官方发布者初始化、上传邮箱授权策略、产品能力与权益组合、EOS 文案。依赖方向保持 `pro → base`。
 - **`eos-core-rs`**：嵌入共享管理器，提供原生执行器、MCP/Skills 桥接、审批及资源适配。现有 `eos-core-protocol` 引用或重导出共享 DTO，不维护第二份字段定义。
@@ -156,7 +158,7 @@ Dev/test 与 Beta/Stable/生产使用独立凭据、数据、签名根与发布�
 
 ## 11. 交付边界
 
-这次交付是完整架构、v1 契约与可判定的实施验收基线。没有变更现有运行路径、数据库或服务器配置，也没有创建生产插件、发版或部署。实现工作应按本规范的纵向闭环逐步验证，不能把“有上传页面”当成统一平台完成。
+本架构最初交付为设计基线。当前仓库已有共享组件、市场服务、Agent 管理路径和官方插件；源码存在不能证明某环境已部署或某客户端已发布。新增宿主、执行器和正式发布仍应按纵向闭环逐步验证，不能把“有上传页面”当成完整平台验收。历史证据见实施/验收文档，2026-11-12 文档核实范围见[核实记录](docs/developer/CODE-VERIFICATION.md)。
 
 ## 参考依据
 

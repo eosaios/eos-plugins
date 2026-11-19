@@ -1,0 +1,23 @@
+schemaVersion = 1
+[plugin]
+id = "tutorial.notes-panel"
+publisher = "tutorial"
+name = "便签示例"
+version = "0.1.0"
+description = "演示普通配置和安装级私有存储"
+license = "MIT"
+[compatibility]
+platformApi = "^1.0.0"
+scope = "portable"
+[[modules]]
+id = "panel"
+type = "webview/v1"
+required = true
+entry = "ui/index.html"
+activation = "on-command"
+requires = [{ capability = "eos.ui.panel", version = "^1.0.0" }]
+permissions = []
+contributions = [{ kind = "panel", id = "notes", title = "便签" }]
+
+[configuration]
+schema = "schemas/config.json"

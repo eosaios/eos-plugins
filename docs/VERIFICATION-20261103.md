@@ -1,5 +1,7 @@
 # 本地验收记录：2026-11-03
 
+> 历史记录，保留当日结果和“未执行”事项；不表示当前部署或发版状态。当前开发入口见[开发手册](developer/README.md)，2026-11-12 源码核实与本次验证见[核实记录](developer/CODE-VERIFICATION.md)。
+
 范围：`feat/unified-plugin-market` 上的共享协议/运行库、内部市场服务、管理后台和 EOS Agent 接入。全部账号、数据库、Redis、密钥、包、Core 配置和浏览器页面使用隔离夹具。
 
 | 验证 | 结果 |

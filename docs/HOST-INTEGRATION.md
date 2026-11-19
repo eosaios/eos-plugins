@@ -2,6 +2,8 @@
 
 平台合同版本 1.0.0。EOS Agent 是当前完成接入的产品；新产品实现自己的宿主适配器，不复制市场、包解析器、策略或安装事务。
 
+2026-11-12 源码核实。插件作者先读[开发手册](developer/README.md)，本页面向宿主集成人员；本页的“支持”指源码路径与实际 HostDescriptor 声明，不代替特定安装包或线上部署验收。
+
 ## 依赖和生成
 
 - `eos-plugin-protocol`：严格清单解析、生成的 DTO、Schema、摘要和标准错误。
@@ -10,7 +12,7 @@
 - `sdk/typescript/src/client.ts`：独立页面的消息端口客户端。
 - `sdk/go/protocol.go`：生成的传输字段，Go 壳不承担兼容性或授权裁决。
 
-`schema/contracts.json` 是插件 DTO 的唯一来源。运行 `python3 scripts/sync-consumers.py` 更新独立仓库的源码快照和字段；CI 使用 `--check` 检查漂移。快照的 `source-lock.json` 固定每一个文件的摘要，消费方可独立构建。敏感的账户传输 DTO 也由此生成，但不输出到前端 TypeScript 接口，也不派生 Rust Debug。
+`crates/eos-plugin-protocol/schema/contracts.json` 是插件 DTO 的唯一来源。运行 `python3 scripts/sync-consumers.py` 更新独立仓库的源码快照和字段；CI 使用 `--check` 检查漂移。快照的 `source-lock.json` 固定每一个文件的摘要，消费方可独立构建。敏感的账户传输 DTO 也由此生成，但不输出到前端 TypeScript 接口，也不派生 Rust Debug。
 
 ## 一个新宿主要做什么
 
@@ -44,13 +46,19 @@ macOS 的 Wails beta.5 原生适配在创建窗口前封闭子 frame 消息与�
 
 configuration.schema 必须是包内、自包含的 JSON Schema。解析计划固定它的内容，安装时重新比对并校验配置。普通配置随安装主体保存；独立页面通过 configuration.get 读取，组件通过内建 eos.plugin.configuration/get 读取。它不是秘密存储。
 
-私有页面数据为至多 1 MiB 的 JSON 对象。data.migrations 声明 fromVersion、toVersion 和 WASM 模块；组件的 invoke("migrate", input) 接收 `{fromVersion,toVersion,data}`，返回升级后的数据对象。迁移时清空授权，不提供外部业务副作用。事务日志保留旧数据，激活失败和进程中断均恢复；数据降级明确拒绝。
+私有页面数据为至多 1 MiB 的 JSON 对象，按 installation 隔离，同一安装的页面模块共享。data.migrations 声明 fromVersion、toVersion 和 WASM 模块；组件的 invoke("migrate", input) 接收 `{fromVersion,toVersion,data}`，返回升级后的数据对象。迁移时清空授权，不提供外部业务副作用。事务日志保留旧数据，激活失败和进程中断均恢复；数据降级明确拒绝。
 
 ## 页面 SDK
 
-独立页面导入 `@eos/plugin-sdk` 的 connectPlugin()。握手校验父窗口、随机 nonce 和唯一 MessagePort；可调用 storage.get/set/delete、configuration.get、capability.invoke 和 log。SDK 包含并发、消息大小和超时限制。
+独立页面使用 `@eos/plugin-sdk` 的 connectPlugin()。当前 SDK 的 package.json 为 private，源码位于 sdk/typescript；尚不能假定存在 npm 发布。作者按[页面教程](developer/MODULES.md)从仓库引用并打包成单文件 HTML。当前 srcdoc 加载不提供相对资源服务器，外链 JS/CSS、CDN、动态 import 或网络 fetch 会被 CSP 阻断。握手校验父窗口、随机 nonce 和唯一 MessagePort；可调用 storage.get/set/delete、configuration.get、capability.invoke 和 log。SDK 包含并发、消息大小和超时限制。当前 log 仅返回 accepted，不持久化日志；eos.ai.skills/invoke 只返回技能激活结果，不生成模型回复。
 
 宿主创建 sandbox iframe，并在 onload 时将 MessagePort 转移给该 iframe。每次转发必须重新绑定当前 installationId、moduleId、generation；关闭页面销毁端口。账号 token、宿主 HTTP 客户端、Wails/Tauri 桥和宿主 UI 框架均不能传入。
+
+## 当前接入限制
+
+清单 activation 接受四类值，但 Agent 安装提交时注册/探测所选模块，尚没有通用事件订阅或启动任务调度 API。limits 目前主要在 WASM 执行器实施，不能把清单字段当成所有执行器都支持的配额。原生 MCP 清空环境并使用入口父目录为 cwd，stderr 当前丢弃；args/env 没有普通配置插值。
+
+当前没有桌面端任意本地目录/包安装或热重载命令。测试市场签名安装与模块离线调试分开，操作见[调试文档](developer/DEBUGGING.md)。完整源码依据和消费快照差异见[核实记录](developer/CODE-VERIFICATION.md)。
 
 ## 最小验证
 

@@ -1,0 +1,31 @@
+{
+  "applicationId": "eos-agent",
+  "hostVersion": "1.0.0",
+  "platformApiVersion": "1.0.0",
+  "environmentId": "tutorial",
+  "hostInstanceId": "tutorial-synthetic-instance",
+  "platform": {
+    "os": "macos",
+    "arch": "aarch64",
+    "surface": "desktop"
+  },
+  "executors": [
+    {
+      "type": "skills/v1",
+      "abi": "1.0.0",
+      "profiles": []
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "eos.ai.skills",
+      "version": "1.0.0"
+    },
+    {
+      "id": "eos.ai.skills.tool-policy",
+      "version": "1.0.0"
+    }
+  ],
+  "uiSlots": [],
+  "policyRevision": 0
+}

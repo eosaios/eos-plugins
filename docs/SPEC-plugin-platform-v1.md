@@ -4,6 +4,17 @@
 
 上层结构见 [ARCHITECTURE](../ARCHITECTURE.md)，实施顺序与用例见 [实施与验收](IMPLEMENTATION-plugin-platform-v1.md)。示例 ID、版本、路径、资源和端点均为规范示意，不代表已注册应用或已发布插件。
 
+## 当前实现与本合同的关系（2026-11-12）
+
+本合同包含扩展目标；开发者实际操作以[开发手册](developer/README.md)为准，源码依据见[核实记录](developer/CODE-VERIFICATION.md)。已实现严格 TOML/Schema、五类模块的 Agent 路径（页面按原生隔离声明）、市场校验/审核/签名、安装事务与租约。以下不能当作当前支持承诺：
+
+- 当前没有本地目录/Git 开发安装、热重载、作者发布 CLI 或发布者自助注册。
+- 没有通用事件调度、秘密/OAuth 代理、受限本机进程、服务器执行或跨插件导出调用。
+- 当前包读取器不强制 dependency-lock.json，依赖固定在服务端解析后的安装计划；SBOM/通用扫描/发布者逐用户成员校验仍需扩展或人工审核，非已实现的自动保障。
+- 当前没有频道、audience、verification 或通用能力定义的管理接口。真实路由见第 10 节。
+- SDK 是仓库内 private TypeScript 源码；独立页面必须内联单 HTML，不能假定相对资源加载或 npm 发布已存在。
+- Schema 没有 data.recovery 字段；activation/limits 字段的实际执行范围见[清单参考](developer/MANIFEST.md)。
+
 ## 当前市场访问策略
 
 已发布目录与搜索允许匿名读取，普通登录账号可以安装和使用。上传独立绑定服务端配置的邮箱白名单，默认关闭，不提升账号为后台管理员。审核、签名发布、下架与撤销仍属于管理权限。匿名读取只返回公开发布资料，不授予运行权限；账户/应用/环境绑定下载和插件权限确认保持不变。旧内部成员名单不再参与读取裁决。
@@ -39,7 +50,7 @@ scope = user | workspace(workspaceId) | organization(organizationId)
 
 ## 3. 清单模型
 
-保留一个根 `plugin.toml`。正式解析使用标准 TOML 库；拒绝重复键、错误类型、缺失必填值、未知字段和越界路径。TOML 规范对象通过同版本 JSON Schema 校验；不得像当前手写解析器那样跳过不认识的字段。
+保留一个根 `plugin.toml`。正式解析使用标准 TOML 库；拒绝重复键、错误类型、缺失必填值、未知字段和越界路径。TOML 规范对象通过同版本 JSON Schema 校验；当前标准 TOML + Schema + 严格 DTO 解析已执行这些检查；不复用旧手写清单解析器。
 
 顶层字段：
 
@@ -49,7 +60,7 @@ scope = user | workspace(workspaceId) | organization(organizationId)
 - `[[modules]]`：非空。每个模块有唯一局部 `id`、`type`、`required`、能力要求 `requires`、所需权限 ID 列表 `permissions` 和 `activation`；执行类型决定其余字段。
 - `[[permissions]]`：`id/capability/actions/resources/reason`；资源是所请求的上限，不等于授权结果。权限只能引用已注册能力的资源 Schema。
 - `[configuration]`：JSON Schema 文件相对路径及凭据需求定义；凭据字段独立于普通配置。
-- `[data]`：数据 Schema 版本、迁移模块与恢复规则；无持久数据可以省略。
+- `[data]`：`version` 与 `migrations`；无持久数据可以省略。当前没有单独 recovery 字段，恢复由事务快照实施。
 - `[[dependencies]]`：`pluginId/version/required`，必要时包含所依赖的插件导出接口及版本。跨插件依赖不自动继承权限或秘密。
 - `[[exports]]`：对其他插件开放时声明 `id/module/interface/version/methods`，每个方法绑定输入/输出 Schema 文件及提供者侧所需权限。未声明的内部模块、方法、数据与依赖不对外暴露；导出 API 版本与插件版本分开管理。
 
@@ -168,7 +179,7 @@ reason = "将确认过的导入内容写入你选择的任务清单"
 
 初始设计采用离线 root 2/3 阈值，targets 与在线 timestamp 分离；私钥不进入应用包、仓库、普通 API 进程或对象存储。签名服务只签已批准的固定发布集合，并记录审计；各环境独立根。密钥生成、保管和恢复由实施时的密钥仪式单独验证，本文不创建任何密钥。
 
-私有市场的目录、签名目标元数据及制品均鉴权。包摘要校验不能替代签名；HTTPS 不能替代发布信任；发布者签名只能作为附加证明，平台认可的目标元数据仍为安装依据。
+按 ADR-002，已发布目录/展示详情公开，签名信任集合、制品下载及运行授权仍需账号与应用会话。包摘要校验不能替代签名；HTTPS 不能替代发布信任；发布者签名只能作为附加证明，平台认可的目标元数据仍为安装依据。
 
 ## 5. 宿主描述、能力与兼容性
 
@@ -218,7 +229,7 @@ reportLifecycle(event), reportDiagnostic(event)
 
 插件上下文不暴露任意 `api.get(url)`、数据库连接、宿主 DOM 或 Go/Rust 内部对象。能力调用是经过身份绑定的 RPC；提供者仍执行用户/资源授权，插件授权不能把用户本来无权访问的数据开放给它。
 
-消息协议使用 JSON-RPC 2.0 风格，包含 `protocolVersion/requestId/instanceId/generation/method/params/deadline`；传输层绑定主体和作用域，不让插件填写它们来换身份。取消作为明确消息传递；迟到响应及上一代实例的消息丢弃并记录。
+逻辑消息需可绑定实例、代次和期限；当前页面 SDK 消息实际为 `{id,method,params}`，响应为 `{id,result}` 或 `{id,error:string}`，由宿主在内部封装安装 ID、moduleId 和 generation。不能把目标消息字段当作当前页面 SDK 的字段要求。传输层绑定主体和作用域，不让插件填写它们来换身份。取消作为明确消息传递；迟到响应及上一代实例的消息丢弃并记录。
 
 能力副作用请求含 `operationId`，提供者声明是否支持去重和结果查询。超时或进程崩溃后未知结果不能自动重放；只有合同明确幂等的操作才能按同一 ID 重试。
 
@@ -250,7 +261,7 @@ Webview 默认禁止网络直连、表单、顶层跳转、弹窗、下载、摄
 
 平台提供配额内的插件私有键值存储作为基础上下文，只包含该安装自己的数据，不需要额外用户数据授权。访问文件、业务数据、其他插件数据、跨实例存储或秘密均不是该基础权限的一部分。
 
-`trusted-process` 是粗粒度本机执行授权：进程可能访问当前用户可访问的系统资源，不能通过其他细粒度声明暗示已限制其直接 OS 访问。该模式默认只允许内部官方已审核发布，普通第三方未来开放时也不能自动获得。
+`trusted-process` 是粗粒度本机执行授权：进程可能访问当前用户可访问的系统资源，不能通过其他细粒度声明暗示已限制其直接 OS 访问。目标策略要求受信进程经过额外审核与批准。当前兼容引擎按 profile 和用户确认判定，不含“仅官方”专用执行闸；上传白名单与人工发布审核负责现阶段准入，不能将其描述为已有的按发布者自动隔离策略。
 
 普通配置按 Schema 校验。秘密只存宿主凭据库/服务端秘密存储，支持轮换与撤销，不进入 manifest、包、同步配置、URL、模型上下文或日志。需要进程原始秘密的受信连接必须专门披露最小凭据注入范围。
 
@@ -311,35 +322,37 @@ any applicable state -> failed | incompatible | policy-blocked | revoked
 - `plugin_audit_events`：发布、ACL、撤销、轮换和管理行为。
 - 本地安装、授权和配置为运行时主记录；仅在明确提供设备同步时上传最小必要镜像。
 
-通用 API 目标前缀：`/api/v1/plugin-market`；管理前缀：`/api/v1/admin/plugin-market`。以下是目标接口，不是已有路由：
+当前 API 前缀为 `/api/v1/plugin-market`；管理前缀为 `/api/v1/admin/plugin-market`。已实现路由如下（请求、响应、身份和示例见[发布指南](developer/PUBLISHING.md)）：
 
 ```text
-GET  /plugins                         # 访问过滤后的搜索/游标分页
-GET  /plugins/{id}                     # 元数据/兼容性声明
-GET  /plugins/{id}/releases            # 仅授权可见发布
-POST /resolve                         # 主体权限 + host + modules -> 精确计划候选
-POST /download-authorizations         # 短时、绑定制品和主体的下载许可
-GET  /artifacts/{digest}               # 受控下载/续传
-GET  /trust/{roleMetadata}             # 受保护的 TUF 元数据
-GET  /policy                          # 签名运行策略/撤销 revision
+GET  /catalog                         # 匿名已发布目录
+GET  /plugins                         # 匿名网页列表
+GET  /plugins/{id}                     # 匿名详情
+POST /search                          # 匿名，带 HostDescriptor
+GET  /upload-access                   # 账号检查上传资格
+POST /uploads                         # 账号 + 白名单，multipart package/targets
+POST /sessions                        # 账号 -> 5 分钟应用绑定会话
+POST /resolve                         # 账号 + 应用会话
+GET  /trust-bundle                     # 账号 + 应用会话；可带 manifestDigest query
+GET  /policy                          # 账号 + 应用会话
+POST /download-authorizations         # 账号 + 应用会话
+GET  /artifacts/{digest}               # 再带 X-Plugin-Download-Token
 
-POST /publishers                      # 管理端：受控创建
-POST /uploads                         # 管理端：暂存隔离区
-POST /uploads/{id}/validate            # 管理端：扫描/规范验证
-POST /releases                        # 管理端：创建固定清单与完整制品集合
-POST /releases/{id}/review             # 管理端：审查结论
-POST /releases/{id}/publish            # 管理端：签名并发布
-PUT  /channels/{id}                    # 管理端：revision 条件更新
-POST /releases/{id}/withdraw           # 管理端：普通下架
-POST /revocations                     # 管理端：安全撤销
-PUT  /plugins/{id}/audience            # 管理端：可见范围及审计
+GET  /api/v1/admin/plugin-market       # 管理目录；无尾部斜线
+POST /uploads                         # 管理入口也需上传白名单
+POST /releases/{id}/{version}/review   # JSON {revision}
+POST /releases/{id}/{version}/publish  # 审核后独立签名
+POST /releases/{id}/{version}/withdraw
+POST /releases/{id}/{version}/revoke
 ```
 
-管理接口路径以上述管理前缀解释。上传在隔离暂存区，不能通过猜测路径公开访问。发布检查命名空间角色、扫描结果、完整制品、依赖及配额；签名服务不能签任意未经审查 URL。
+发布者创建、单独 validate、releases 创建接口、频道、audience 和 verification 管理属于扩展目标，当前未暴露这些路由；`/trust/{roleMetadata}` 也不是实际 API。上传成功一次创建不可变完整 Release，状态为 validated；包格式检查不等于通用恶意代码扫描。
 
-发布状态：`draft -> validated -> approved -> published -> withdrawn`；`rejected` 要修正为新发布版本，`revoked` 为安全禁用。发布内容一旦创建即不可替换，未发布包可按保留策略回收，但 ID/版本占用和审计保留。
+管理接口路径以上述管理前缀解释（目录 GET 使用前缀本身，无尾部斜线）。上传在隔离暂存区，不能通过猜测路径公开访问。当前服务检查上传资格、已批准发布者、完整制品、格式和限额；逐发布者成员授权及通用扫描仍为目标，审核者须人工核对来源和执行内容。签名服务只签固定本地目录，不能签任意未经审查 URL。
 
-频道指针独立于发布内容，revision 条件更新防并发覆盖。下架可经审查重新发布相同字节，撤销不可静默恢复；修复需新版本和新审查。
+当前发布状态：上传成功为 `validated`，审核后 `approved`，签名后 `published`，可下架为 `withdrawn`；withdrawn 可经管理员重新 publish 相同字节。approved/published/withdrawn 可安全撤销为 `revoked`。当前无 draft/rejected 创建或处理入口；修正包要使用新版本。发布内容一旦创建即不可替换，未发布包可按保留策略回收，但 ID/版本占用和审计保留。
+
+当前发布/审查更新使用 revision 防并发覆盖。频道指针的独立管理仍为目标。下架可经审查重新发布相同字节，撤销不可静默恢复；修复需新版本和新审查。
 
 不存在全平台一个 `enabled` 控制所有客户端。市场发布状态、组织安装策略、宿主安装启用状态分开存储。新公开模式也不能因“已发布”而绕过组织 ACL 或产品权益。
 
@@ -349,7 +362,7 @@ ETag/缓存必须按环境和访问主体/受众 revision 分区，不能把内�
 
 ## 11. 策略租约、撤销与离线
 
-签名运行策略绑定环境、发布摘要、策略 revision、受众与有效期。初始最大离线运行租约为 24 小时，组织/能力可收紧；在线每 5 分钟检查，启动、启用、升级及高风险授权前检查。服务端 revoke 或 ACL 改变不向离线客户端承诺即时生效。
+签名运行策略绑定环境、发布摘要、策略 revision、受众与有效期。初始最大离线运行租约为 24 小时，组织/能力可收紧；当前应用级心跳每 4 分钟检查，插件页面打开时另有每 5 分钟同步；启动、启用、升级及高风险授权前也检查。服务端 revoke 或 ACL 改变不向离线客户端承诺即时生效。
 
 - 普通下架：停止新安装/升级解析，已有安装在授权租约内可运行。
 - 安全撤销：阻止激活，关闭代理能力、终止可控实例；依赖者进入 `policy-blocked`。
@@ -361,7 +374,7 @@ ETag/缓存必须按环境和访问主体/受众 revision 分区，不能把内�
 
 ## 12. 错误、日志与可观测性
 
-统一错误结构：`code/messageKey/details/retryable/operationId/planId/instanceId`；details 对用户可见内容脱敏。错误码至少包括：
+当前共享错误结构：`code/message/details/retryable`；HTTP 包在 error 中，SDK 页面接收 error 字符串。operationId/planId/instanceId 与 messageKey 是扩展诊断目标，不应假设每个错误对象都有这些字段；details 对用户可见内容脱敏。错误码至少包括：
 
 ```text
 UNAUTHENTICATED, NOT_FOUND_OR_FORBIDDEN, SCHEMA_UNSUPPORTED,
@@ -379,7 +392,7 @@ ACTIVATION_FAILED, MIGRATION_FAILED, OPERATION_OUTCOME_UNKNOWN
 
 ## 13. 开发模式与迁移
 
-本地路径/固定 Git commit 仅在显式开发模式使用，清楚标记“开发、未发布信任”。开发插件单独目录/配置，不能写正式缓存或在重启后悄悄获得生产信任；开发模式不放宽能力代理权限。
+目标开发模式若引入本地路径/固定 Git commit，必须显式启用；当前 CLI/Agent 尚无该入口。该目标要求：清楚标记“开发、未发布信任”。开发插件单独目录/配置，不能写正式缓存或在重启后悄悄获得生产信任；开发模式不放宽能力代理权限。
 
 正式运行只使用新合同。一次性迁移按预先盘点结果执行：静态索引样例不自动上架；旧 Agent name 安装生成受控 ID 映射并转换注册引用；后台 `plugin.json` 转为 `plugin.toml` 与隔离入口。未知来源/冲突必须报告并停用，不能自动映射为官方插件或删除数据。
 

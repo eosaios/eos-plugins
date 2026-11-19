@@ -10,10 +10,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--check", action="store_true")
 args = parser.parse_args()
 subprocess.run(["python3", str(root / "scripts/generate.py"), *(["--check"] if args.check else [])], check=True)
-for repo in ("eos-base", "eos-core-rs"):
+for repo in ("eos-platform", "eos-core-rs"):
     subprocess.run(["python3", str(root / "scripts/vendor.py"), "--destination", str(root.parent / repo / "vendor/eos-plugins"), *(["--check"] if args.check else [])], check=True)
 source = root / "sdk/typescript/src/protocol.ts"
-for target in (root.parent / "eos-app-src/frontend/src/plugin-platform-protocol.ts", root.parent / "eos-base/web/admin/src/plugin-platform-protocol.ts"):
+for target in (root.parent / "eos-app-src/frontend/src/plugin-platform-protocol.ts", root.parent / "eos-platform/core/web/admin/src/plugin-platform-protocol.ts"):
     if args.check:
         if target.read_bytes() != source.read_bytes():
             raise SystemExit(f"stale generated types: {target}")

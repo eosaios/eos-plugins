@@ -5,3 +5,7 @@
 *.key
 *.pk8
 __pycache__/
+/examples/notes-panel/node_modules/
+/examples/notes-panel/package/ui/index.html
+/examples/mcp-echo/target/
+/examples/mcp-echo/package/native/

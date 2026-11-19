@@ -1,0 +1,22 @@
+schemaVersion = 1
+[plugin]
+id = "tutorial.mcp-echo"
+publisher = "tutorial"
+name = "MCP Echo 示例"
+version = "0.1.0"
+description = "原生 stdio MCP 返回合成文本"
+license = "MIT"
+[compatibility]
+platformApi = "^1.0.0"
+scope = "portable"
+[[modules]]
+id = "echo"
+type = "mcp-stdio/v1"
+profile = "trusted-process"
+required = true
+entry = "native/echo.exe"
+activation = "on-demand"
+requires = []
+permissions = []
+args = []
+env = {}
